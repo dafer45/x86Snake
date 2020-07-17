@@ -23,22 +23,30 @@ nextScreen	db	"================", LF
 
 extern printString
 extern sleep
+extern cannonicalInputOff
+extern cannonicalInputOn
+extern echoOff
+extern echoOn
 
 section .text
 
 global _start
 _start:
+	call	cannonicalInputOff
+	call	echoOff
 
-;  Print title screen.
-
+	;  Print title screen.
 	mov	rdi, titleScreen
 	call	printString
 
-	mov	rdi, 200000000
+	mov	rdi, 900000000
 	call	sleep
 
 	mov	rdi, nextScreen
 	call	printString
+
+	call	echoOn
+	call	cannonicalInputOn
 
 	mov	rax, SYS_exit
 	mov	rdi, EXIT_SUCCESS
