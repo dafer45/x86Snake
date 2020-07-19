@@ -75,9 +75,8 @@ mainLoop:
 	mov	dil, [inputCharacter]
 	call	updatePlayerDirection
 	call	updatePlayground
-
-;	mov	rdi, inputCharacter
-;	call	printString
+	cmp	rax, 1
+	je	exit
 
 	jmp	mainLoop
 exit:

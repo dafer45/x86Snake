@@ -2,8 +2,6 @@ section .data
 
 %include "defines.asm"
 
-debugString	db	"Hello!!!!", LF, NULL
-
 WIDTH		equ	20
 HEIGHT		equ	20
 
@@ -20,6 +18,7 @@ applePositionY		dq	HEIGHT/4
 
 playerDirection		dq	0
 playerSize		dq	10
+snakeIsDeadFlag		dq	0
 
 section .bss
 
@@ -150,7 +149,8 @@ finishUpdatePosition:
 ;  Arguments:
 ;    nothing
 ;  Returns:
-;    nothing
+;    If the snake died -> rax = 1
+;    Else -> rax = 1
 global updatePlayground
 updatePlayground:
 	push	rbp
@@ -158,7 +158,21 @@ updatePlayground:
 
 	call	updatePlayerBody
 	call	updatePlayerPosition
+	call	checkCollision
+	cmp	rax, 1
+	je	snakeIsDead
+	jmp	snakeIsAlive
 
+snakeIsDead:
+	mov	qword [snakeIsDeadFlag], 1
+	jmp	afterCheckSnakeIsDead
+snakeIsAlive:
+	mov	qword [snakeIsDeadFlag], 0
+	jmp	afterCheckSnakeIsDead
+afterCheckSnakeIsDead:
+	call	imprintHead
+
+	mov	rax, qword [snakeIsDeadFlag]
 	pop	rbp
 	ret
 
@@ -254,15 +268,69 @@ movePlayerDown:
 	mov	qword [playerPositionY], r12
 	jmp	afterMovePlayer
 afterMovePlayer:
+;	mov	rax, qword [playerPositionY]
+;	mov	r12, WIDTH
+;	mul	r12
+;	add	rax, qword [playerPositionX]
+;	mov	byte [playground + rax], HEAD
+
+	pop	r14
+	pop	r13
+	pop	r12
+	pop	rbp
+	ret
+
+; -----
+;  Check collsion.
+;
+;  Arguments:
+;    nothing
+;  Return:
+;    If collsion has occured -> rax = 1
+;    Else -> rax = 0
+checkCollision:
+	push	rbp
+	mov	rbp, rsp
+
+	mov	rax, qword [playerPositionY]
+	mov	r12, WIDTH
+	mul	r12
+	add	rax, qword [playerPositionX]
+	cmp	byte [playground + rax], APPLE
+	je	noCollision
+	cmp	byte [playground + rax], HEAD
+	je	noCollision
+	cmp	byte [playground + rax], 0
+	je	noCollision
+	jmp	collisionOccured
+noCollision:
+	mov	rax, 0
+	jmp	finishCheckCollision
+collisionOccured:
+	mov	rax, 1
+	jmp	finishCheckCollision
+finishCheckCollision:
+	pop	rbp
+	ret
+
+; -----
+;  Imprint head on the playground.
+;
+;  Arguments:
+;    nothing
+;  Returns:
+;    nothing
+
+imprintHead:
+	push	rbp
+	mov	rbp, rsp
+
 	mov	rax, qword [playerPositionY]
 	mov	r12, WIDTH
 	mul	r12
 	add	rax, qword [playerPositionX]
 	mov	byte [playground + rax], HEAD
 
-	pop	r14
-	pop	r13
-	pop	r12
 	pop	rbp
 	ret
 
