@@ -20,5 +20,11 @@ extern printString
 
 global clearScreen
 clearScreen:
+	push	rbp
+	mov	rbp, rsp
+
 	mov	rdi, clearTerminalString
 	call	printString
+
+	pop	rbp
+	ret

@@ -2,8 +2,15 @@ section .data
 
 %include "defines.asm"
 
+debugString	db	"Hello!!!!", LF, NULL
+
 WIDTH		equ	20
 HEIGHT		equ	20
+
+APPLE		equ	255
+WALL		equ	254
+HEAD		equ	253
+MAX_ID		equ	HEAD
 
 playerPositionX		dq	WIDTH/2
 playerPositionY		dq	HEIGHT/2
@@ -12,6 +19,7 @@ applePositionX		dq	WIDTH/4
 applePositionY		dq	HEIGHT/4
 
 playerDirection		dq	0
+playerSize		dq	10
 
 section .bss
 
@@ -66,17 +74,17 @@ afterInitApple:
 
 	jmp	setEmpty
 setWall:
-	mov	byte [playground + r14], 'W'
+	mov	byte [playground + r14], WALL
 	jmp	finishInitPlaygroundSite
 setPlayer:
-	mov	byte [playground + r14], 'P'
+	mov	byte [playground + r14], HEAD
 	jmp	finishInitPlaygroundSite
 setApple:
-	mov	byte [playground + r14], 'A'
+	mov	byte [playground + r14], APPLE
 	jmp	finishInitPlaygroundSite
 
 setEmpty:
-	mov	byte [playground + r14], 'E'
+	mov	byte [playground + r14], 0
 	jmp	finishInitPlaygroundSite
 
 finishInitPlaygroundSite:
@@ -147,6 +155,72 @@ global updatePlayground
 updatePlayground:
 	push	rbp
 	mov	rbp, rsp
+
+	call	updatePlayerBody
+	call	updatePlayerPosition
+
+	pop	rbp
+	ret
+
+; -----
+;  Update the player body.
+
+updatePlayerBody:
+	push	rbp
+	mov	rbp, rsp
+	push	r12
+	push	r13
+	push	r14
+	push	r15
+	push	rax
+
+	;  Initialize loop.
+	mov	r12, 0
+	mov	r14, 0
+loopRowUpdatePlayerBody:
+	mov	r13, 0
+loopColumnUpdatePlayerBody:
+	cmp	byte [playground + r14], 0
+	je	skipDecrementSite
+	cmp	byte [playground + r14], MAX_ID
+	jae	skipDecrementSite
+	mov	r15b, byte [playground + r14]
+	dec	r15b
+	mov	byte [playground + r14], r15b
+
+skipDecrementSite:
+	inc	r14
+
+	inc	r13
+	cmp	r13, WIDTH
+	jne	loopColumnUpdatePlayerBody
+
+	inc	r12
+	cmp	r12, HEIGHT
+	jne	loopRowUpdatePlayerBody
+
+	;  Set the previous player head position to the player length.
+	mov	rax, qword [playerPositionY]
+	mov	r12, WIDTH
+	mul	r12
+	add	rax, qword [playerPositionX]
+	mov	r15, qword [playerSize]
+	mov	byte [playground + rax], r15b
+
+	pop	rax
+	pop	r15
+	pop	r14
+	pop	r13
+	pop	r12
+	pop	rbp
+	ret
+
+; -----
+;  Update the player position.
+
+updatePlayerPosition:
+	push	rbp
+	mov	rbp, rsp
 	push	r12
 	push	r13
 	push	r14
@@ -184,12 +258,12 @@ afterMovePlayer:
 	mov	r12, WIDTH
 	mul	r12
 	add	rax, qword [playerPositionX]
-	mov	byte [playground + rax], 'P'
+	mov	byte [playground + rax], HEAD
 
 	pop	r14
 	pop	r13
 	pop	r12
-	pop rbp
+	pop	rbp
 	ret
 
 ; -----
@@ -217,12 +291,14 @@ draw:
 loopRowDraw:
 	mov	r13, 0
 loopColumnDraw:
-	cmp	byte [playground + r15], 'W'
+	cmp	byte [playground + r15], WALL
 	je	drawWall
-	cmp	byte [playground + r15], 'P'
+	cmp	byte [playground + r15], HEAD
 	je	drawPlayerHead
-	cmp	byte [playground + r15], 'A'
+	cmp	byte [playground + r15], APPLE
 	je	drawApple
+	cmp	byte [playground + r15], 0
+	jne	drawBody
 	jmp	drawEmpty
 
 drawWall:
@@ -233,6 +309,9 @@ drawPlayerHead:
 	jmp	finishDrawSite
 drawApple:
 	mov	byte [screenBuffer + r14], 'x'
+	jmp	finishDrawSite
+drawBody:
+	mov	byte [screenBuffer + r14], 'o'
 	jmp	finishDrawSite
 drawEmpty:
 	mov	byte [screenBuffer + r14], ' '
