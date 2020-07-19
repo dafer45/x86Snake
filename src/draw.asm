@@ -143,6 +143,54 @@ finishUpdatePosition:
 ;    nothing
 ;  Returns:
 ;    nothing
+global updatePlayground
+updatePlayground:
+	push	rbp
+	mov	rbp, rsp
+	push	r12
+	push	r13
+	push	r14
+
+	cmp	qword [playerDirection], 0
+	je	movePlayerRight
+	cmp	qword [playerDirection], 1
+	je	movePlayerUp
+	cmp	qword [playerDirection], 2
+	je	movePlayerLeft
+	cmp	qword [playerDirection], 3
+	je	movePlayerDown
+movePlayerRight:
+	mov	r12, qword [playerPositionX]
+	inc	r12
+	mov	qword [playerPositionX], r12
+	jmp	afterMovePlayer
+movePlayerUp:
+	mov	r12, qword [playerPositionY]
+	dec	r12
+	mov	qword [playerPositionY], r12
+	jmp	afterMovePlayer
+movePlayerLeft:
+	mov	r12, qword [playerPositionX]
+	dec	r12
+	mov	qword [playerPositionX], r12
+	jmp	afterMovePlayer
+movePlayerDown:
+	mov	r12, qword [playerPositionY]
+	inc	r12
+	mov	qword [playerPositionY], r12
+	jmp	afterMovePlayer
+afterMovePlayer:
+	mov	rax, qword [playerPositionY]
+	mov	r12, WIDTH
+	mul	r12
+	add	rax, qword [playerPositionX]
+	mov	byte [playground + rax], 'P'
+
+	pop	r14
+	pop	r13
+	pop	r12
+	pop rbp
+	ret
 
 ; -----
 ;  Draw the playground.

@@ -38,6 +38,7 @@ extern echoOn
 extern clearScreen
 extern initPlayground
 extern updatePlayerDirection
+extern updatePlayground
 extern draw
 
 section .text
@@ -70,7 +71,10 @@ mainLoop:
 	cmp	byte [inputCharacter], 'e'
 	je	exit
 
+	mov	rdi, 0
+	mov	dil, [inputCharacter]
 	call	updatePlayerDirection
+	call	updatePlayground
 
 ;	mov	rdi, inputCharacter
 ;	call	printString
