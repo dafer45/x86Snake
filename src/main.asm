@@ -36,6 +36,7 @@ extern cannonicalInputOn
 extern echoOff
 extern echoOn
 extern clearScreen
+extern draw
 
 section .text
 
@@ -55,6 +56,7 @@ _start:
 
 	mov	rbx, 10
 mainLoop:
+	call	draw
 	mov	rdi, 200000000
 	call	sleep
 
@@ -65,8 +67,8 @@ mainLoop:
 	cmp	byte [inputCharacter], 'e'
 	je	exit
 
-	mov	rdi, inputCharacter
-	call	printString
+;	mov	rdi, inputCharacter
+;	call	printString
 
 	jmp	mainLoop
 exit:
