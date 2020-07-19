@@ -19,10 +19,18 @@ nextScreen	db	"================", LF
 		tv_sec	dq	0
 		tv_nsec	dq	0
 
+inputCharacter	db	" ", LF, NULL
+
+pollfd:
+	fd	dd	0
+	events	dw	0
+	revents	dw	0
+
 ; ****************
 
 extern printString
 extern sleep
+extern getChar
 extern cannonicalInputOff
 extern cannonicalInputOn
 extern echoOff
@@ -39,11 +47,23 @@ _start:
 	mov	rdi, titleScreen
 	call	printString
 
-	mov	rdi, 900000000
+	mov	rbx, 10
+loopA:
+	mov	rdi, 200000000
 	call	sleep
 
-	mov	rdi, nextScreen
+	call	getChar
+	mov	byte [inputCharacter], al
+
+	mov	rdi, inputCharacter
 	call	printString
+
+skipRead:
+	cmp	rbx, 0
+	je	done
+	dec	rbx
+	jmp	loopA
+done:
 
 	call	echoOn
 	call	cannonicalInputOn
