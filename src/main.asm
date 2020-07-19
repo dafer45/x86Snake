@@ -36,6 +36,7 @@ extern cannonicalInputOn
 extern echoOff
 extern echoOn
 extern clearScreen
+extern initPlayground
 extern draw
 
 section .text
@@ -53,6 +54,7 @@ _start:
 	call	sleep
 
 	call	clearScreen
+	call	initPlayground
 
 	mov	rbx, 10
 mainLoop:
