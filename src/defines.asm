@@ -3,6 +3,7 @@
 
 LF		equ	10
 NULL		equ	0
+ESC		equ	27
 
 STDIN		equ	0
 STDOUT		equ	1

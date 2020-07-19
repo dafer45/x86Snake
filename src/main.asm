@@ -35,6 +35,7 @@ extern cannonicalInputOff
 extern cannonicalInputOn
 extern echoOff
 extern echoOn
+extern clearScreen
 
 section .text
 
@@ -47,24 +48,28 @@ _start:
 	mov	rdi, titleScreen
 	call	printString
 
+	mov	rdi, 200000000
+	call	sleep
+
+	call	clearScreen
+
 	mov	rbx, 10
-loopA:
+mainLoop:
 	mov	rdi, 200000000
 	call	sleep
 
 	call	getChar
 	mov	byte [inputCharacter], al
+	call	clearScreen
+
+	cmp	byte [inputCharacter], 'e'
+	je	exit
 
 	mov	rdi, inputCharacter
 	call	printString
 
-skipRead:
-	cmp	rbx, 0
-	je	done
-	dec	rbx
-	jmp	loopA
-done:
-
+	jmp	mainLoop
+exit:
 	call	echoOn
 	call	cannonicalInputOn
 
