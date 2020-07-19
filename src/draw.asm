@@ -11,6 +11,8 @@ playerPositionY		dq	HEIGHT/2
 applePositionX		dq	WIDTH/4
 applePositionY		dq	HEIGHT/4
 
+playerDirection		dq	0
+
 section .bss
 
 screenBuffer	resb	(WIDTH+1)*HEIGHT + 1
@@ -95,6 +97,52 @@ doneInitPlayground:
 	pop	rbx
 	pop	rbp
 	ret
+
+; -----
+;  Set the player direction.
+;
+;  Arguments:
+;    1) rdi = 0 (right), 1 (up), 2 (left), 3 (down)
+;  Returns:
+;    nothing
+
+global updatePlayerDirection
+updatePlayerDirection:
+	push	rbp
+	mov	rbp, rsp
+
+	cmp	rdi, 'l'
+	je	setRight
+	cmp	rdi, 'i'
+	je	setUp
+	cmp	rdi, 'j'
+	je	setLeft
+	cmp	rdi, 'k'
+	je	setDown
+	jmp	finishUpdatePosition
+setRight:
+	mov	qword [playerDirection], 0
+	jmp	finishUpdatePosition
+setUp:
+	mov	qword [playerDirection], 1
+	jmp	finishUpdatePosition
+setLeft:
+	mov	qword [playerDirection], 2
+	jmp	finishUpdatePosition
+setDown:
+	mov	qword [playerDirection], 3
+	jmp	finishUpdatePosition
+finishUpdatePosition:
+	pop	rbp
+	ret
+
+; -----
+;  Update playground.
+;
+;  Arguments:
+;    nothing
+;  Returns:
+;    nothing
 
 ; -----
 ;  Draw the playground.
