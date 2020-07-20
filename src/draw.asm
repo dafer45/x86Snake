@@ -30,6 +30,7 @@ playground	resb	WIDTH*HEIGHT
 section .text
 
 extern printString
+extern random
 
 ; -----
 ;  Initialize the play ground.
@@ -352,13 +353,21 @@ finishCheckAteApple:
 addNewApple:
 	push	rbp
 	mov	rbp, rsp
+	push	r12
 
-	mov	rax, 3*WIDTH/4
-	mov	[applePositionX], rax
-	mov	rax, 3*HEIGHT/4
-	mov	[applePositionY], rax
+	call	random
+	mov	r12, WIDTH
+	cqo
+	div	r12
+	mov	[applePositionX], rdx
+	call	random
+	mov	r12, HEIGHT
+	cqo
+	div	r12
+	mov	[applePositionY], rdx
 	call	tryAddApple
 
+	pop	r12
 	pop	rbp
 	ret
 
