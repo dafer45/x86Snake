@@ -170,6 +170,8 @@ snakeIsAlive:
 	mov	qword [snakeIsDeadFlag], 0
 	jmp	afterCheckSnakeIsDead
 afterCheckSnakeIsDead:
+	call	checkAteApple
+
 	call	imprintHead
 
 	mov	rax, qword [snakeIsDeadFlag]
@@ -310,6 +312,66 @@ collisionOccured:
 	mov	rax, 1
 	jmp	finishCheckCollision
 finishCheckCollision:
+	pop	rbp
+	ret
+
+; -----
+;  Check if the snake ate the apple.
+;
+;  Arguments:
+;    nothing
+;  Returns:
+;    nothing
+
+checkAteApple:
+	push	rbp
+	mov	rbp, rsp
+
+	mov	rax, qword [playerPositionY]
+	mov	r12, WIDTH
+	mul	r12
+	add	rax, qword [playerPositionX]
+	cmp	byte [playground + rax], APPLE
+	jne	finishCheckAteApple
+	mov	r12, qword [playerSize]
+	inc	r12
+	mov	qword [playerSize], r12
+	call	addNewApple
+finishCheckAteApple:
+	pop	rbp
+	ret
+
+; -----
+;  Add new apple to the playground.
+;
+;  Arguments:
+;    nothing
+;  Returns:
+;    nothing
+
+addNewApple:
+	push	rbp
+	mov	rbp, rsp
+
+	mov	rax, 3*WIDTH/4
+	mov	[applePositionX], rax
+	mov	rax, 3*HEIGHT/4
+	mov	[applePositionY], rax
+	call	tryAddApple
+
+	pop	rbp
+	ret
+
+tryAddApple:
+	push	rbp
+	mov	rbp, rsp
+
+	mov	rax, qword [applePositionY]
+	mov	r12, WIDTH
+	mul	r12
+	add	rax, qword [applePositionX]
+	mov	byte [playground + rax], APPLE
+
 	pop	rbp
 	ret
 
