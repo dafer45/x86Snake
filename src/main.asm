@@ -7,13 +7,16 @@ section .data
 ; -----
 ;  Data.
 
-titleScreen	db	"================", LF
-		db	"=    Snake!    =", LF
-		db	"================", LF, NULL
-
-nextScreen	db	"================", LF
-		db	"=     Fake!    =", LF
-		db	"================", LF, NULL
+titleScreen	db	"===================", LF
+		db	"=      Fake!      =", LF
+		db	"===================", LF,
+		db	LF
+		db	"i - Up", LF
+		db	"k - Down", LF
+		db	"j - Left", LF
+		db	"l - Right", LF
+		db	LF
+		db	"Press enter to play.", LF, NULL
 
 	timespec:
 		tv_sec	dq	0
@@ -52,8 +55,13 @@ _start:
 	mov	rdi, titleScreen
 	call	printString
 
+waitForEnter:
 	mov	rdi, 200000000
 	call	sleep
+
+	call	getChar
+	cmp	al, LF
+	jne	waitForEnter
 
 	call	clearScreen
 	call	initPlayground
