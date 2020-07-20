@@ -20,6 +20,9 @@ playerDirection		dq	0
 playerSize		dq	10
 snakeIsDeadFlag		dq	0
 
+scoreLabel		db	"Score: ", NULL
+score			db	"ABCD", NULL
+
 section .bss
 
 screenBuffer	resb	(WIDTH+1)*HEIGHT + 1
@@ -31,6 +34,7 @@ section .text
 
 extern printString
 extern random
+extern intToString
 
 ; -----
 ;  Initialize the play ground.
@@ -355,6 +359,7 @@ addNewApple:
 	mov	rbp, rsp
 	push	r12
 
+loopAddNewApple:
 	call	random
 	mov	r12, WIDTH
 	cqo
@@ -366,6 +371,8 @@ addNewApple:
 	div	r12
 	mov	[applePositionY], rdx
 	call	tryAddApple
+	cmp	rax, 0
+	je	loopAddNewApple
 
 	pop	r12
 	pop	rbp
@@ -374,13 +381,22 @@ addNewApple:
 tryAddApple:
 	push	rbp
 	mov	rbp, rsp
+	push	r12
 
 	mov	rax, qword [applePositionY]
 	mov	r12, WIDTH
 	mul	r12
 	add	rax, qword [applePositionX]
+	cmp	byte [playground + rax], 0
+	jne	failedAddApple
 	mov	byte [playground + rax], APPLE
-
+	mov	rax, 1
+	jmp	finishTryAddApple
+failedAddApple:
+	mov	rax, 0
+	jmp	finishTryAddApple
+finishTryAddApple:
+	pop	r12
 	pop	rbp
 	ret
 
@@ -474,6 +490,16 @@ finishDrawSite:
 
 drawBuffer:
 	mov	rdi, screenBuffer
+	call	printString
+drawScore:
+	mov	rdi, scoreLabel
+	call	printString
+	mov	rdi, [playerSize]
+	sub	rdi, 10
+	mov	rsi, score
+	mov	rdx, 4
+	call	intToString
+	mov	rdi, score
 	call	printString
 
 ;  Draw done, return to calling routine.

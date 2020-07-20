@@ -61,7 +61,7 @@ _start:
 	mov	rbx, 10
 mainLoop:
 	call	draw
-	mov	rdi, 200000000
+	mov	rdi, 100000000
 	call	sleep
 
 	call	getChar
