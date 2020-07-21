@@ -105,17 +105,12 @@ mainLoop:
 
 	jmp	mainLoop
 onDead:
-;	call	clearScreen
-;	mov	rdi, scoreLabel
-;	call	printString
 	call	getScore
 	mov	rdi, rax
 	mov	rsi, score
 	mov	rdx, 4
 	call	intToString
 	jmp	showTitleScreen
-;	mov	rdi, score
-;	call	printString
 exit:
 	call	echoOn
 	call	cannonicalInputOn

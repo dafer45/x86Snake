@@ -2,7 +2,7 @@ section .data
 
 %include "defines.asm"
 
-clearTerminalString	db	ESC, "[H", 27, "[2J", NULL
+clearTerminalString	db	ESC, "[H", ESC, "[2J", NULL
 
 ; ****************
 
