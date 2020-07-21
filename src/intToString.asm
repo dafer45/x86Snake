@@ -12,7 +12,7 @@ section .text
 ;  Arguments:
 ;    1) rdi = Integer to convert.
 ;    2) rsi = Buffer to write to.
-;    3) rdx = Maximum number of characters in the bugger.
+;    3) rdx = Maximum number of characters in the buffer.
 ;  Returns:
 ;    String representation of the integer by reference.
 
@@ -26,7 +26,7 @@ intToString:
 	mov	r12, rdx
 	mov	rax, rdi
 	mov	rdx, NULL
-	mov	[rsi+r12], rdx
+	mov	byte [rsi+r12], dl
 loopIntToString:
 	cmp	r12, 0
 	je	finishIntToString

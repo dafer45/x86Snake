@@ -16,7 +16,13 @@ titleScreen	db	"===================", LF
 		db	"j - Left", LF
 		db	"l - Right", LF
 		db	LF
-		db	"Press enter to play.", LF, NULL
+		db	"e - Exit", LF
+		db	LF
+		db	"Press ENTER to play.", LF, NULL
+
+scoreLabel	db	"Score: ", NULL
+score		db	"ABCD", NULL
+newLine		db	LF, NULL
 
 	timespec:
 		tv_sec	dq	0
@@ -43,6 +49,8 @@ extern initPlayground
 extern updatePlayerDirection
 extern updatePlayground
 extern draw
+extern getScore
+extern intToString
 
 section .text
 
@@ -51,8 +59,15 @@ _start:
 	call	cannonicalInputOff
 	call	echoOff
 
-	;  Print title screen.
+showTitleScreen:
+	call	clearScreen
 	mov	rdi, titleScreen
+	call	printString
+	mov	rdi, scoreLabel
+	call	printString
+	mov	rdi, score
+	call	printString
+	mov	rdi, newLine
 	call	printString
 
 waitForEnter:
@@ -60,6 +75,8 @@ waitForEnter:
 	call	sleep
 
 	call	getChar
+	cmp	al, 'e'
+	je	exit
 	cmp	al, LF
 	jne	waitForEnter
 
@@ -84,9 +101,21 @@ mainLoop:
 	call	updatePlayerDirection
 	call	updatePlayground
 	cmp	rax, 1
-	je	exit
+	je	onDead
 
 	jmp	mainLoop
+onDead:
+;	call	clearScreen
+;	mov	rdi, scoreLabel
+;	call	printString
+	call	getScore
+	mov	rdi, rax
+	mov	rsi, score
+	mov	rdx, 4
+	call	intToString
+	jmp	showTitleScreen
+;	mov	rdi, score
+;	call	printString
 exit:
 	call	echoOn
 	call	cannonicalInputOn

@@ -25,7 +25,7 @@ score			db	"ABCD", NULL
 
 section .bss
 
-screenBuffer	resb	(WIDTH+1)*HEIGHT + 1
+screenBuffer	resb	(WIDTH+1)*HEIGHT + 1 + 1
 playground	resb	WIDTH*HEIGHT
 
 ; ****************
@@ -48,7 +48,24 @@ initPlayground:
 	push	r13
 	push	r14
 
-;  Initialize loop.
+	;  Set the initial player position.
+	mov	rax, WIDTH/2
+	mov	qword [playerPositionX], rax
+	mov	rax, HEIGHT/2
+	mov	qword [playerPositionY], rax
+	;  Set the initial apple position.
+	mov	rax, WIDTH/4
+	mov	qword [applePositionX], rax
+	mov	rax, HEIGHT/4
+	mov	qword [applePositionY], rax
+	;  Set the initial snake size.
+	mov	rax, 10
+	mov	qword [playerSize], 10
+	;  Set the initial direction.
+	mov	rax, 0
+	mov	qword [playerDirection], rax
+
+	;  Initialize loop.
 	mov	r12, 0
 	mov	r14, 0
 loopRowInitPlayground:
@@ -511,5 +528,24 @@ doneDraw:
 	pop	r13
 	pop	r12
 	pop	rbx
+	pop	rbp
+	ret
+
+; -----
+;  Get the score.
+;
+;  Arguments:
+;    nothing
+;  Returns:
+;    rax = The score.
+
+global getScore
+getScore:
+	push	rbp
+	mov	rbp, rsp
+
+	mov	rax, qword [playerSize]
+	sub	rax, 10
+
 	pop	rbp
 	ret
