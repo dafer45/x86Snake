@@ -1,6 +1,6 @@
 # Snake for x86 64-bit Linux.
 
-Tested on Ubuntu 18.04.4 LTS
+Implemented in assembly and tested on Ubuntu 18.04.4 LTS.
 
 <img src="screenshot/Screenshot.png" />
 
