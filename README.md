@@ -6,7 +6,7 @@ Tested on Ubuntu 18.04.4 LTS
 
 ## Requirements
 
-ld (sudo apt-get install build-essential)
+ld (sudo apt-get install build-essential)  
 yasm (sudo apt-get install yasm)
 
 ## Build
