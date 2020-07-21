@@ -20,8 +20,7 @@ printString:
 	mov	rbp, rsp
 	push	rbx
 
-;  Count the number of characters in the string.
-
+	;  Count the number of characters in the string.
 	mov	rbx, rdi
 	mov	rdx, 0
 strCountLoop:
@@ -34,15 +33,13 @@ strCountDone:
 	cmp	rdx, 0
 	je	prtDone
 
-;  Call the OS to output the string.
-
+	;  Call the OS to output the string.
 	mov	rax, SYS_write
 	mov	rsi, rdi
 	mov	rdi, STDOUT
 	syscall
 
-;  String printed, return to calling routine.
-
+	;  String printed, return to calling routine.
 prtDone:
 	pop	rbx
 	pop	rbp

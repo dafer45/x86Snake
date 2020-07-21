@@ -22,13 +22,12 @@ section .text
 
 global sleep
 sleep:
-;  Prolog.
+	;  Prolog.
 	push	rbp
 	mov	rbp, rsp
 	push	rbx
 
-;  Function body.
-
+	;  Function body.
 	mov	qword [tv_sec], 0
 	mov	qword [tv_nsec], rdi
 	mov	rax, 35
@@ -36,8 +35,7 @@ sleep:
 	mov	rsi, 0
 	syscall
 
-;  Return.
-
+	;  Return.
 	pop	rbx
 	pop	rbp
 	ret
